@@ -49,5 +49,5 @@ qrcode
 pytz
 pydub
 apscheduler
-pymongo==3.12.0
+pymongo==4.6.3
 motor<3.4.0
