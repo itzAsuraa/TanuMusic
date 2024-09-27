@@ -14,8 +14,8 @@ httpx[http2]
 lyricsgenius
 motor
 wget
-pillow==9.5.0
-pymongo==3.12.0
+pillow==10.3.0
+pymongo==4.6.3
 psutil
 pytube
 pykeyboard
@@ -35,7 +35,7 @@ flask
 blackpink
 pycountry
 pyshorteners
-gunicorn==20.1.0
+gunicorn==22.0.0
 youtube-search
 youtube-search-python
 pornhub-api==0.3.0
