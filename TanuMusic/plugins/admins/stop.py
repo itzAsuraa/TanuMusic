@@ -1,0 +1,98 @@
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+
+from config import BANNED_USERS, adminlist
+from strings import get_string
+from TanuMusic import app
+from TanuMusic.core.call import Dns
+from TanuMusic.misc import SUDOERS
+from TanuMusic.utils.database import (
+    delete_filter,
+    get_cmode,
+    get_lang,
+    is_active_chat,
+    is_commanddelete_on,
+    is_maintenance,
+    is_nonadmin_chat,
+    set_loop,
+)
+
+
+@app.on_message(
+    filters.command(["stop", "end", "cstop", "cend"]) & filters.group & ~BANNED_USERS
+)
+async def stop_music(cli, message: Message):
+    if await is_maintenance() is False:
+        if message.from_user.id not in SUDOERS:
+            return await message.reply_text(
+                "Bot is under maintenance. Please wait for some time..."
+            )
+    
+    # Handling filter deletion logic if "end" or "stop" command has arguments
+    if not len(message.command) < 2:
+        filter = " ".join(message.command[1:])
+        deleted = await delete_filter(message.chat.id, filter)
+        if deleted:
+            return await message.reply_text(f"**Deleted filter: {filter}.**")
+        else:
+            return await message.reply_text("**No such filter found.**")
+
+    # Check if command delete is enabled
+    if await is_commanddelete_on(message.chat.id):
+        try:
+            await message.delete()
+        except:
+            pass
+
+    # Getting the appropriate language
+    try:
+        language = await get_lang(message.chat.id)
+        _ = get_string(language)
+    except:
+        _ = get_string("en")
+
+    # Handling sender chat case
+    if message.sender_chat:
+        upl = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="How to Fix this?",
+                        callback_data="AnonymousAdmin",
+                    ),
+                ]
+            ]
+        )
+        return await message.reply_text(_["general_4"], reply_markup=upl)
+
+    # Checking for the "c" command case
+    if message.command[0][0] == "c":
+        chat_id = await get_cmode(message.chat.id)
+        if chat_id is None:
+            return await message.reply_text(_["setting_12"])
+        try:
+            await app.get_chat(chat_id)
+        except:
+            return await message.reply_text(_["cplay_4"])
+    else:
+        chat_id = message.chat.id
+
+    # Checking if chat is active
+    if not await is_active_chat(chat_id):
+        return await message.reply_text(_["general_6"])
+
+    # Checking for non-admin mode
+    is_non_admin = await is_nonadmin_chat(message.chat.id)
+    if not is_non_admin:
+        if message.from_user.id not in SUDOERS:
+            admins = adminlist.get(message.chat.id)
+            if not admins:
+                return await message.reply_text(_["admin_18"])
+            else:
+                if message.from_user.id not in admins:
+                    return await message.reply_text(_["admin_19"])
+
+    # Stop the music and reset the loop
+    await Dns.stop_stream(chat_id)
+    await set_loop(chat_id, 0)
+    await message.reply_text(_["admin_9"].format(message.from_user.mention))
