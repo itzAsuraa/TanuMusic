@@ -16,7 +16,7 @@ def get_command(value: str) -> List:
 
 
 def get_string(lang: str):
-    return languages["buttom"]
+    return languages[lang]
 
 
 for filename in os.listdir(r"./strings"):
@@ -47,6 +47,6 @@ for filename in os.listdir(r"./strings/langs/"):
         languages_present[language_name] = languages[language_name]["name"]
     except:
         print(
-            "There is some issue with the language file inside bot. Please report it to the TheTeamvk at @TheTeamvk on Telegram"
+            "There is some issue with the language file inside bot. Please report it to @AsuraaSupports on Telegram"
         )
         sys.exit()
