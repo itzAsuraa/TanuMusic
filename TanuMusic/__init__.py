@@ -1,5 +1,5 @@
 
-from TanuMusic.core.bot import DnsBot
+from TanuMusic.core.bot import TanuBot
 from TanuMusic.core.dir import dirr
 from TanuMusic.core.git import git
 from TanuMusic.core.userbot import Userbot
@@ -22,7 +22,7 @@ heroku()
 # Load Sudo Users from DB
 sudo()
 # Bot Client
-app = DnsBot()
+app = TanuBot()
 
 # Assistant Client
 userbot = Userbot()
