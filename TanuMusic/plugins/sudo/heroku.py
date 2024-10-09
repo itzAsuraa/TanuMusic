@@ -23,7 +23,7 @@ from TanuMusic.utils.database import (
     remove_active_video_chat,
 )
 from TanuMusic.utils.decorators.language import language
-from TanuMusic.utils.pastebin import Dnsbin
+from TanuMusic.utils.pastebin import TanuBin
 
 # Commands
 GETLOG_COMMAND = get_command("GETLOG_COMMAND")
@@ -42,7 +42,7 @@ async def is_heroku():
 
 
 async def paste_neko(code: str):
-    return await Dnsbin(code)
+    return await TanuBin(code)
 
 
 @app.on_message(
@@ -56,7 +56,7 @@ async def log_(client, message, _):
             if HAPP is None:
                 return await message.reply_text(_["heroku_1"])
             data = HAPP.get_log()
-            link = await Dnsbin(data)
+            link = await TanuBin(data)
             return await message.reply_text(link)
         else:
             if os.path.exists(config.LOG_FILE_NAME):
@@ -254,7 +254,7 @@ async def update_(client, message, _):
     _final_updates_ = f"{_update_response_} {updates}"
 
     if len(_final_updates_) > 4096:
-        url = await Dnsbin(updates)
+        url = await TanuBin(updates)
         nrs = await response.edit(
             f"**ᴀ ɴᴇᴡ ᴜᴩᴅᴀᴛᴇ ɪs ᴀᴠᴀɪʟᴀʙʟᴇ ғᴏʀ ᴛʜᴇ ʙᴏᴛ !**\n\n➣ ᴩᴜsʜɪɴɢ ᴜᴩᴅᴀᴛᴇs ɴᴏᴡ\n\n__**ᴜᴩᴅᴀᴛᴇs :**__\n\n[ᴄʜᴇᴄᴋ ᴜᴩᴅᴀᴛᴇs]({url})",
             disable_web_page_preview=True,
