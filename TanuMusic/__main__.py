@@ -7,7 +7,7 @@ from pyrogram import idle
 import config
 from config import BANNED_USERS
 from TanuMusic import HELPABLE, LOGGER, app, userbot
-from TanuMusic.core.call import Dns
+from TanuMusic.core.call import Tanu
 from TanuMusic.plugins import ALL_MODULES
 from TanuMusic.utils.database import get_banned_users, get_gbanned
 
