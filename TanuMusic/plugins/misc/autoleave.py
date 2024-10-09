@@ -60,7 +60,7 @@ async def auto_end():
                     continue
                 autoend[chat_id] = {}
                 try:
-                    await Dns.stop_stream(chat_id)
+                    await Tanu.stop_stream(chat_id)
                 except:
                     continue
                 try:
