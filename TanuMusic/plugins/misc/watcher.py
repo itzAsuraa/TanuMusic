@@ -2,7 +2,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from TanuMusic import app
-from TanuMusic.core.call import Dns
+from TanuMusic.core.call import Tanu 
 
 
 @app.on_message(filters.video_chat_started, group=20)
@@ -12,7 +12,7 @@ async def force_stop_stream(_, message: Message):
     try:
         if message.left_chat_member and not message.left_chat_member is None:
             if message.left_chat_member.id == (await get_assistant(message.chat.id)).id:
-                return await Dns.force_stop_stream(message.chat.id)
-        await Dns.force_stop_stream(message.chat.id)
+                return await Tanu.force_stop_stream(message.chat.id)
+        await Tanu.force_stop_stream(message.chat.id)
     except Exception:
         pass
