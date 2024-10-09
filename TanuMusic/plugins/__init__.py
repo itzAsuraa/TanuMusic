@@ -25,7 +25,7 @@ def __list_all_modules():
         mod_paths += glob.glob(join(work_dir, "*/*.py"))
 
         modules = [
-            (f.replace(main_repo_plugins_dir, "DnsXMusic.plugins")).replace(os.sep, ".")[:-3]
+            (f.replace(main_repo_plugins_dir, "TanuMusic.plugins")).replace(os.sep, ".")[:-3]
             for f in mod_paths
             if isfile(f) and f.endswith(".py") and not f.endswith("__init__.py")
         ]
