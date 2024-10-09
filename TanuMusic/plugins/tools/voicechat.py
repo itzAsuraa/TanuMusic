@@ -3,7 +3,7 @@ from pyrogram.enums import ChatType
 
 from strings import get_string
 from TanuMusic import app
-from TanuMusic.utils import Dnsbin
+from TanuMusic.utils import Tanu
 from TanuMusic.utils.database import get_assistant, get_lang
 
 
