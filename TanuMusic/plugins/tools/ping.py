@@ -5,7 +5,7 @@ from pyrogram.types import Message
 
 from config import BANNED_USERS, PING_IMG_URL
 from TanuMusic import app
-from TanuMusic.core.call import Dns
+from TanuMusic.core.call import Tanu 
 from TanuMusic.utils import bot_sys_stats
 from TanuMusic.utils.decorators.language import language
 from TanuMusic.utils.inline import support_group_markup
@@ -19,7 +19,7 @@ async def ping_com(client, message: Message, _):
         caption=_["ping_1"].format(app.mention),
     )
     start = datetime.now()
-    pytgping = await Dns.ping()
+    pytgping = await Tanu.ping()
     UP, CPU, RAM, DISK = await bot_sys_stats()
     resp = (datetime.now() - start).microseconds / 1000
     await response.edit_text(
