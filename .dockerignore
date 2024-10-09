@@ -1,6 +1,6 @@
 .env
 .cache
-Dnslogs.txt
+Tanulogs.txt
 .DS_Store
 *.session
 raw_files/
