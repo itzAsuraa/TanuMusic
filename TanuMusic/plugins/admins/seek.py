@@ -4,7 +4,7 @@ from pyrogram.types import Message
 from config import BANNED_USERS
 from strings import get_command
 from TanuMusic import YouTube, app
-from TanuMusic.core.call import Dns
+from TanuMusic.core.call import Tanu 
 from TanuMusic.misc import db
 from TanuMusic.utils import AdminRightsCheck, seconds_to_min
 
