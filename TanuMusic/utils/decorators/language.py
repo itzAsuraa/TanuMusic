@@ -1,7 +1,7 @@
 
 from strings import get_string
-from DnsXMusic.misc import SUDOERS
-from DnsXMusic.utils.database import get_lang, is_commanddelete_on, is_maintenance
+from TanuMusic.misc import SUDOERS
+from TanuMusic.utils.database import get_lang, is_commanddelete_on, is_maintenance
 
 
 def language(mystic):
