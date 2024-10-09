@@ -5,7 +5,7 @@ from pyrogram.enums import ChatType
 
 import config
 from TanuMusic import app
-from TanuMusic.core.call import Dns, autoend
+from TanuMusic.core.call import Tanu, autoend
 from TanuMusic.utils.database import get_client, is_active_chat, is_autoend
 
 
