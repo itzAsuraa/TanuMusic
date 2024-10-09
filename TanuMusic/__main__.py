@@ -46,8 +46,8 @@ async def init():
                 HELPABLE[imported_module.__MODULE__.lower()] = imported_module
     LOGGER("TanuMusic.plugins").info("Successfully Imported All Modules ")
     await userbot.start()
-    await Dns.start()
-    await Dns.decorators()
+    await Tanu.start()
+    await Tanu.decorators()
     LOGGER("TanuMusic").info("TanuMusic Started Successfully")
     await idle()
 
