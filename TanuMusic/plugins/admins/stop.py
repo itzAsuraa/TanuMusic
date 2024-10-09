@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from config import BANNED_USERS, adminlist
 from strings import get_string
 from TanuMusic import app
-from TanuMusic.core.call import Dns
+from TanuMusic.core.call import Tanu
 from TanuMusic.misc import SUDOERS
 from TanuMusic.utils.database import (
     delete_filter,
@@ -93,6 +93,6 @@ async def stop_music(cli, message: Message):
                     return await message.reply_text(_["admin_19"])
 
     # Stop the music and reset the loop
-    await Dns.stop_stream(chat_id)
+    await Tanu.stop_stream(chat_id)
     await set_loop(chat_id, 0)
     await message.reply_text(_["admin_9"].format(message.from_user.mention))
