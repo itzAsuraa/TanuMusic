@@ -14,7 +14,7 @@ async def post(url: str, *args, **kwargs):
         return data
 
 
-async def Tanubin(text):
+async def TanuBin(text):
     resp = await post(f"{BASE}api/v2/paste", data=text)
     if not resp["success"]:
         return
