@@ -217,7 +217,7 @@ async def start_comm(client, message: Message, _):
     else:
         out = private_panel(_)
         photo_file = await app.download_media(message.from_user.photo.big_file_id)
-        await dnss.delete()
+        await Tanu.delete()
 
         if photo_file:
             try:
