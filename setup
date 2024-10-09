@@ -94,7 +94,7 @@ update
 packages
 node
 installation
-pprint "\n\n\n\n\nDnsXMusic Installation Completed !" "cgreen"
+pprint "\n\n\n\n\nTanuMusic Installation Completed !" "cgreen"
 sleep 1
 clear
 
