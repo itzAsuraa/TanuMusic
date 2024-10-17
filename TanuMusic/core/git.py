@@ -39,17 +39,19 @@ def git():
         UPSTREAM_REPO = f"https://{GIT_USERNAME}:{config.GIT_TOKEN}@{TEMP_REPO}"
     else:
         UPSTREAM_REPO = config.UPSTREAM_REPO
+
     try:
         repo = Repo()
         LOGGER(__name__).info(f"Git Client Found [VPS DEPLOYER]")
     except GitCommandError:
         LOGGER(__name__).info(f"Invalid Git Command")
     except InvalidGitRepositoryError:
+        LOGGER(__name__).info("Invalid repository, initializing...")
         repo = Repo.init()
-        if "origin" in repo.remotes:
-            origin = repo.remote("origin")
-        else:
+        if "origin" not in repo.remotes:
             origin = repo.create_remote("origin", UPSTREAM_REPO)
+        else:
+            origin = repo.remote("origin")
         origin.fetch()
         repo.create_head(
             config.UPSTREAM_BRANCH,
@@ -59,11 +61,6 @@ def git():
             origin.refs[config.UPSTREAM_BRANCH]
         )
         repo.heads[config.UPSTREAM_BRANCH].checkout(True)
-
-        try:
-            repo.create_remote("origin", config.UPSTREAM_REPO)
-        except BaseException:
-            pass
 
     nrs = repo.remote("origin")
     nrs.fetch(config.UPSTREAM_BRANCH)
