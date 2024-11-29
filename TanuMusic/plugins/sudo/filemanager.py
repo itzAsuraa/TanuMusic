@@ -1,8 +1,7 @@
 import io
 import os
-import os.path
 import time
-from inspect import getfullargspec
+from inspect import signature
 from os.path import exists, isdir
 
 from pyrogram import filters
@@ -10,113 +9,139 @@ from pyrogram.types import Message
 
 from TanuMusic import app
 from TanuMusic.misc import SUDOERS
-from TanuMusic.utils.error import capture_err
 
 MAX_MESSAGE_SIZE_LIMIT = 4095
+
+
+def humanbytes(size):
+    """Convert bytes into a human-readable format."""
+    for unit in ["B", "KB", "MB", "GB", "TB", "PB"]:
+        if size < 1024:
+            return f"{size:.2f} {unit}"
+        size /= 1024
+
+
+def split_limits(text, limit=MAX_MESSAGE_SIZE_LIMIT):
+    """Split text into chunks that do not exceed the given limit."""
+    return [text[i: i + limit] for i in range(0, len(text), limit)]
+
+
+async def eor(msg: Message, **kwargs):
+    """Edit or reply to a message."""
+    if msg.from_user and msg.from_user.is_self:
+        func = msg.edit_text
+    else:
+        func = msg.reply
+
+    # Get valid arguments for the function
+    valid_args = signature(func).parameters.keys()
+    filtered_kwargs = {k: v for k, v in kwargs.items() if k in valid_args}
+
+    return await func(**filtered_kwargs)
+
+
+def capture_err(func):
+    """Decorator to handle errors gracefully."""
+    async def wrapper(client, message, *args, **kwargs):
+        try:
+            return await func(client, message, *args, **kwargs)
+        except Exception as e:
+            error_feedback = split_limits(str(e))
+            for feedback in error_feedback:
+                await message.reply(feedback)
+            raise e
+    return wrapper
 
 
 @app.on_message(filters.command("ls") & ~filters.forwarded & ~filters.via_bot & SUDOERS)
 @capture_err
 async def lst(_, message):
-    prefix = message.text.split()[0][0]
-    chat_id = message.chat.id
     path = os.getcwd()
     text = message.text.split(" ", 1)
     directory = None
+
     if len(text) > 1:
         directory = text[1].strip()
         path = directory
+
     if not exists(path):
         await eor(
             message,
-            text=f"There is no such directory or file with the name `{directory}` check again!",
+            text=f"There is no such directory or file with the name `{directory}`. Check again!",
         )
         return
+
     if isdir(path):
-        if directory:
-            msg = "Folders and Files in `{}` :\n\n".format(path)
-            lists = os.listdir(path)
-        else:
-            msg = "Folders and Files in Current Directory :\n\n"
-            lists = os.listdir(path)
+        msg = f"Folders and Files in `{path}`:\n\n" if directory else "Folders and Files in Current Directory:\n\n"
         files = ""
         folders = ""
-        for contents in sorted(lists):
-            thepathoflight = path + "/" + contents
-            if not isdir(thepathoflight):
-                size = os.stat(thepathoflight).st_size
-                if contents.endswith((".mp3", ".flac", ".wav", ".m4a")):
-                    files += "🎵 " + f"{contents}\n"
-                if contents.endswith((".opus")):
-                    files += "🎙 " + f"{contents}\n"
-                elif contents.endswith(
-                    (".mkv", ".mp4", ".webm", ".avi", ".mov", ".flv")
-                ):
-                    files += "🎞 " + f"{contents}\n"
-                elif contents.endswith(
-                    (".zip", ".tar", ".tar.gz", ".rar", ".7z", ".xz")
-                ):
-                    files += "🗜 " + f"{contents}\n"
-                elif contents.endswith(
-                    (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico", ". webp")
-                ):
-                    files += "🖼 " + f"{contents}\n"
-                elif contents.endswith((".exe", ".deb")):
-                    files += "⚙️ " + f"{contents}\n"
-                elif contents.endswith((".iso", ".img")):
-                    files += "💿 " + f"{contents}\n"
-                elif contents.endswith((".apk", ".apk")):
-                    files += "📱 " + f"{contents}\n"
-                elif contents.endswith((".py")):
-                    files += "🐍 " + f"{contents}\n"
-                else:
-                    files += "📄 " + f"{contents}\n"
-            else:
+
+        for contents in sorted(os.listdir(path)):
+            item_path = os.path.join(path, contents)
+            if isdir(item_path):
                 folders += f"📁 {contents}\n"
-        if files or folders:
-            msg = msg + folders + files
-        else:
-            msg = msg + "__empty path__"
+            else:
+                size = os.stat(item_path).st_size
+                if contents.endswith((".mp3", ".flac", ".wav", ".m4a")):
+                    files += f"🎵 {contents}\n"
+                elif contents.endswith(".opus"):
+                    files += f"🎙 {contents}\n"
+                elif contents.endswith((".mkv", ".mp4", ".webm", ".avi", ".mov", ".flv")):
+                    files += f"🎞 {contents}\n"
+                elif contents.endswith((".zip", ".tar", ".tar.gz", ".rar", ".7z", ".xz")):
+                    files += f"🗜 {contents}\n"
+                elif contents.endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico", ".webp")):
+                    files += f"🖼 {contents}\n"
+                elif contents.endswith((".exe", ".deb")):
+                    files += f"⚙️ {contents}\n"
+                elif contents.endswith((".iso", ".img")):
+                    files += f"💿 {contents}\n"
+                elif contents.endswith((".apk", ".xapk")):
+                    files += f"📱 {contents}\n"
+                elif contents.endswith(".py"):
+                    files += f"🐍 {contents}\n"
+                else:
+                    files += f"📄 {contents}\n"
+
+        msg += folders + files if files or folders else "__empty path__"
     else:
         size = os.stat(path).st_size
-        msg = "The details of given file :\n\n"
+        last_modified = time.ctime(os.path.getmtime(path))
+        last_accessed = time.ctime(os.path.getatime(path))
+
         if path.endswith((".mp3", ".flac", ".wav", ".m4a")):
-            mode = "🎵 "
-        if path.endswith((".opus")):
-            mode = "🎙 "
+            mode = "🎵"
+        elif path.endswith(".opus"):
+            mode = "🎙"
         elif path.endswith((".mkv", ".mp4", ".webm", ".avi", ".mov", ".flv")):
-            mode = "🎞 "
+            mode = "🎞"
         elif path.endswith((".zip", ".tar", ".tar.gz", ".rar", ".7z", ".xz")):
-            mode = "🗜 "
-        elif path.endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico", ". webp")):
-            mode = "🖼 "
+            mode = "🗜"
+        elif path.endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico", ".webp")):
+            mode = "🖼"
         elif path.endswith((".exe", ".deb")):
-            mode = "⚙️ "
+            mode = "⚙️"
         elif path.endswith((".iso", ".img")):
-            mode = "💿 "
+            mode = "💿"
         elif path.endswith((".apk", ".xapk")):
-            mode = "📱 "
-        elif path.endswith((".py")):
-            mode = "🐍 "
+            mode = "📱"
+        elif path.endswith(".py"):
+            mode = "🐍"
         else:
-            mode = "📄 "
-        time.ctime(os.path.getctime(path))
-        time2 = time.ctime(os.path.getmtime(path))
-        time3 = time.ctime(os.path.getatime(path))
-        msg += f"<b>Location : </b> {path}\n"
-        msg += f"<b>Icon : </b> {mode}\n"
-        msg += f"<b>Size : </b> {humanbytes(size)}\n"
-        msg += f"<b>Last Modified Time: </b> {time2}\n"
-        msg += f"<b>Last Accessed Time: </b> {time3}"
+            mode = "📄"
+
+        msg = (
+            f"<b>Location:</b> {path}\n"
+            f"<b>Icon:</b> {mode}\n"
+            f"<b>Size:</b> {humanbytes(size)}\n"
+            f"<b>Last Modified:</b> {last_modified}\n"
+            f"<b>Last Accessed:</b> {last_accessed}\n"
+        )
 
     if len(msg) > MAX_MESSAGE_SIZE_LIMIT:
         with io.BytesIO(str.encode(msg)) as out_file:
             out_file.name = "ls.txt"
-            await app.send_document(
-                chat_id,
-                out_file,
-                caption=path,
-            )
+            await app.send_document(message.chat.id, out_file, caption=path)
             await message.delete()
     else:
         await eor(message, text=msg)
@@ -124,22 +149,13 @@ async def lst(_, message):
 
 @app.on_message(filters.command("rm") & ~filters.forwarded & ~filters.via_bot & SUDOERS)
 @capture_err
-async def rm_file(client, message):
+async def rm_file(_, message):
     if len(message.command) < 2:
         return await eor(message, text="Please provide a file name to delete.")
     file = message.text.split(" ", 1)[1]
+
     if exists(file):
         os.remove(file)
         await eor(message, text=f"{file} has been deleted.")
     else:
         await eor(message, text=f"{file} doesn't exist!")
-
-
-async def eor(msg: Message, **kwargs):
-    func = (
-        (msg.edit_text if msg.from_user.is_self else msg.reply)
-        if msg.from_user
-        else msg.reply
-    )
-    spec = getfullargspec(func.__wrapped__).args
-    return await func(**{k: v for k, v in kwargs.items() if k in spec})
