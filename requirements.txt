@@ -28,7 +28,6 @@ flask
 pyshorteners
 youtube-search
 youtube-search-python
-pornhub-api==0.3.0
 async_pymongo
 gpytranslate
 search_engine_parser
