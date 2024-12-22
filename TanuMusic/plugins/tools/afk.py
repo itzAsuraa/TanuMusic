@@ -2,6 +2,7 @@ import time, re
 from config import BOT_USERNAME
 from pyrogram.enums import MessageEntityType
 from pyrogram import filters
+from pyrogram.types import MessageEntity
 from pyrogram.types import Message
 from TanuMusic import app
 from TanuMusic.utils.formatters import get_readable_time
@@ -166,21 +167,26 @@ async def active_afk(_, message: Message):
 
 chat_watcher_group = 1
 
-
 @app.on_message(
     ~filters.me & ~filters.bot & ~filters.via_bot,
     group=chat_watcher_group,
 )
 async def chat_watcher_func(_, message):
+    # Check if the message has a valid 'from_user' attribute
+    if not message.from_user:
+        return  # Skip messages without a 'from_user' (like system messages or messages from channels)
+
     if message.sender_chat:
         return
+
     userid = message.from_user.id
     user_name = message.from_user.first_name
+
     if message.entities:
         possible = ["/afk", f"/afk@{BOT_USERNAME}"]
         message_text = message.text or message.caption
         for entity in message.entities:
-            if entity.type == MessageEntityType.BOT_COMMAND:
+            if entity.type == "bot_command":  # Compare directly to "bot_command"
                 if (message_text[0 : 0 + entity.length]).lower() in possible:
                     return
 
