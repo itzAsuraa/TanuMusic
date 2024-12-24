@@ -5,7 +5,6 @@ from TanuMusic import userbot
 from TanuMusic.core.mongo import mongodb
 from TanuMusic.utils.mongo import db
 
-afkdb = db.afk
 authdb = mongodb.adminauth
 authuserdb = mongodb.authuser
 autoenddb = mongodb.autoend
