@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from pyrogram import Client, filters
 from pyrogram.types import InputMediaPhoto, Message
-from TanuMusic import app
+from TanuMusic import app 
 
 # Function to fetch images from Google Images
 def fetch_google_images(query, num_images=7):
@@ -16,7 +16,7 @@ def fetch_google_images(query, num_images=7):
 
     try:
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Will raise an HTTPError for bad responses (4xx or 5xx)
+        response.raise_for_status()  # Raise an error for bad responses (4xx or 5xx)
 
         soup = BeautifulSoup(response.text, 'html.parser')
         image_urls = []
@@ -58,21 +58,21 @@ async def google_img_search(client: Client, message: Message):
     try:
         query = message.text.split(None, 1)[1]
     except IndexError:
-        return await message.reply("❍ ᴘʀᴏᴠɪᴅᴇ ᴀɴ ɪᴍᴀɢᴇ ǫᴜɪɴ ᴛᴏ sᴇᴀʀᴄʜ!")
+        return await message.reply("❍ ᴘʀᴏᴠɪᴅᴇ ᴀɴ ɪᴍᴀɢᴇ ǫᴜᴇʀʏ ᴛᴏ sᴇᴀʀᴄʜ!", parse_mode="markdown")
 
     lim = 7  # Default limit to 7 images
     image_urls = fetch_google_images(query, num_images=lim)
 
     if not image_urls:
-        return await message.reply("❍ ɴᴏ ɪᴍᴀɢᴇs ғᴏᴜɴᴅ!")
+        return await message.reply("❍ ɴᴏ ɪᴍᴀɢᴇs ғᴏᴜɴᴅ!", parse_mode="markdown")
 
-    msg = await message.reply("❍ ғɪɴᴅɪɴɢ ɪᴍᴀɢᴇs.....")
+    msg = await message.reply("❍ ғɪɴᴅɪɴɢ ɪᴍᴀɢᴇs.....", parse_mode="markdown")
 
     # Download images
     downloaded_images = download_images(image_urls, folder="downloads")
 
     if not downloaded_images:
-        return await message.reply("❍ ɪɴsᴜғғɪᴄɪᴇɴᴛ ɪᴍᴀɢᴇs ᴛᴏ sᴇɴᴅ.")
+        return await message.reply("❍ ɪɴsᴜғғɪᴄɪᴇɴᴛ ɪᴍᴀɢᴇs ғᴏᴜɴᴅ ᴛᴏ sᴇɴᴅ.", parse_mode="markdown")
 
     try:
         # Send images as a media group
@@ -91,4 +91,4 @@ async def google_img_search(client: Client, message: Message):
     except Exception as e:
         # Handle errors while sending images
         await msg.delete()
-        return await message.reply(f"❍ ᴇʀʀᴏʀ ɪɴ sᴇɴᴅɪɴɢ ɪᴍᴀɢᴇs: {e}")
+        return await message.reply(f"❍ ᴇʀʀᴏʀ ɪɴ sᴇɴᴅɪɴɢ ɪᴍᴀɢᴇs: {e}", parse_mode="markdown")
