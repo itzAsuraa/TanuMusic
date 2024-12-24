@@ -16,13 +16,13 @@ BUTTONS = [
 async def _packkang(app, message):  
     txt = await message.reply_text("✦ ᴘʀᴏᴄᴇssɪɴɢ....")
     if not message.reply_to_message:
-        await txt.edit("ʀᴇᴘʟʏ ᴛᴏ ᴍᴇssᴀɢᴇ")
+        await txt.edit("ʀᴇᴘʟʏ ᴛᴏ ᴍᴇssᴀɢᴇ.")
         return
     if not message.reply_to_message.sticker:
-        await txt.edit("ʀᴇᴘʟʏ ᴛᴏ sᴛɪᴄᴋᴇʀ")
+        await txt.edit("ʀᴇᴘʟʏ ᴛᴏ sᴛɪᴄᴋᴇʀ.")
         return
     if message.reply_to_message.sticker.is_animated or message.reply_to_message.sticker.is_video:
-        return await txt.edit("ʀᴇᴘʟʏ ᴛᴏ ᴀ ɴᴏɴ-ᴀɴɪᴍᴀᴛᴇᴅ sᴛɪᴄᴋᴇʀ")
+        return await txt.edit("ʀᴇᴘʟʏ ᴛᴏ ᴀ ɴᴏɴ-ᴀɴɪᴍᴀᴛᴇᴅ sᴛɪᴄᴋᴇʀ.")
     
     pack_name = (
         f"{message.from_user.first_name}_sticker_pack_by_@TanuMusicxBot"
@@ -70,7 +70,7 @@ async def _packkang(app, message):
 @app.on_message(filters.command(["stickerid", "stid"]))
 async def sticker_id(app, msg):
     if not msg.reply_to_message or not msg.reply_to_message.sticker:
-        await msg.reply_text("✦ Reply to a sticker")
+        await msg.reply_text("✦ Reply to a sticker.")
         return
     
     st_in = msg.reply_to_message.sticker
