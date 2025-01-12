@@ -4,7 +4,7 @@ from pyrogram import Client, filters
 from TanuMusic import app
 
 def fetch_song(song_name):
-    url = f"https://song-teleservice.vercel.app/song?songName={song_name.replace(' ', '%20')}"
+    url = f"https://song-tele.vercel.app/song?songName={song_name.replace(' ', '%20')}"
     try:
         response = requests.get(url)
         return response.json() if response.status_code == 200 and "downloadLink" in response.json() else None
